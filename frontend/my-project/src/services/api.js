@@ -11,6 +11,6 @@ export async function sendCoordinates(selectedCities) {
     console.log("Kết quả từ backend:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Lỗi khi gửi tọa độ:", error);
+    console.error(" Lỗi khi gửi tọa độ:", error);
   }
 }

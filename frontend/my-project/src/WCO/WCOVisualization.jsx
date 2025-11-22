@@ -39,15 +39,15 @@ const WcoVisualization = ({
 
   // DEBUG: Log dữ liệu nhận được
   useEffect(() => {
-    console.log("🔍 WCO Result received:", wcoResult);
+    console.log(" WCO Result received:", wcoResult);
     if (wcoResult) {
-      console.log("📊 Steps data:", wcoResult.steps);
-      console.log("💰 Best distance:", wcoResult.best_distance);
-      console.log("🎯 Total steps:", wcoResult.steps?.length);
+      console.log(" Steps data:", wcoResult.steps);
+      console.log(" Best distance:", wcoResult.best_distance);
+      console.log(" Total steps:", wcoResult.steps?.length);
     }
   }, [wcoResult]);
 
-  // 🎯 Reset khi có dữ liệu mới
+  //  Reset khi có dữ liệu mới
   useEffect(() => {
     if (wcoResult?.steps) {
       setStepIndex(0);
@@ -55,17 +55,17 @@ const WcoVisualization = ({
     }
   }, [wcoResult]);
 
-  // 🎯 Xử lý steps cho WCO
+  //  Xử lý steps cho WCO
   const steps = useMemo(() => {
     if (!wcoResult?.steps) return [];
     return wcoResult.steps;
   }, [wcoResult]);
 
-  // 🎯 Tính convergence data với best distance thực tế từ backend
+  //  Tính convergence data với best distance thực tế từ backend
   const convergenceData = useMemo(() => {
     if (!steps.length) return [];
 
-    console.log("📈 Calculating convergence data from", steps.length, "steps");
+    console.log(" Calculating convergence data from", steps.length, "steps");
 
     const data = [];
     let minDistanceSoFar = Infinity;
@@ -86,7 +86,7 @@ const WcoVisualization = ({
       });
     });
 
-    console.log("📊 Convergence data:", data);
+    console.log(" Convergence data:", data);
     return data;
   }, [steps, wcoResult]);
 
@@ -137,7 +137,7 @@ const WcoVisualization = ({
     return { nodes, links };
   }, [wcoResult, width, height]);
 
-  // 🎯 Highlight best path hiện tại
+  //  Highlight best path hiện tại
   const visualLinks = useMemo(() => {
     if (!graphData.links.length) {
       return [];
@@ -180,16 +180,16 @@ const WcoVisualization = ({
     const intervalTime = maxSpeed - simSpeed + minSpeed;
 
     console.log(
-      `🎯 Starting auto-play: steps=${steps.length}, interval=${intervalTime}ms`
+      ` Starting auto-play: steps=${steps.length}, interval=${intervalTime}ms`
     );
 
     playTimerRef.current = setInterval(() => {
       setStepIndex((prev) => {
         const next = prev + 1;
-        console.log(`🎯 Auto-play step: ${prev} -> ${next} / ${steps.length}`);
+        console.log(` Auto-play step: ${prev} -> ${next} / ${steps.length}`);
 
         if (next >= steps.length) {
-          console.log("✅ Auto-play completed - stopping");
+          console.log(" Auto-play completed - stopping");
           clearInterval(playTimerRef.current);
           playTimerRef.current = null;
           setPlaying(false);
@@ -201,7 +201,7 @@ const WcoVisualization = ({
 
     return () => {
       if (playTimerRef.current) {
-        console.log("🛑 Clearing auto-play interval");
+        console.log("Clearing auto-play interval");
         clearInterval(playTimerRef.current);
         playTimerRef.current = null;
       }
@@ -209,7 +209,7 @@ const WcoVisualization = ({
   }, [playing, simSpeed, steps.length]);
 
   const handleNext = () => {
-    console.log("⏭️ Next button clicked");
+    console.log(" Next button clicked");
     setPlaying(false);
     setStepIndex((prev) => {
       const next = prev + 1;
@@ -218,7 +218,7 @@ const WcoVisualization = ({
   };
 
   const handleReset = () => {
-    console.log("🔄 Reset button clicked");
+    console.log("Reset button clicked");
     setPlaying(false);
     setStepIndex(0);
     if (fgRef.current) {
@@ -304,10 +304,10 @@ const WcoVisualization = ({
     }, 300);
   }, [graphData.nodes.length]);
 
-  // 🎯 Tính toán dữ liệu cho biểu đồ hội tụ
+  //  Tính toán dữ liệu cho biểu đồ hội tụ
   const chartData = convergenceData;
 
-  // 🎯 Tính min/max cho biểu đồ
+  //  Tính min/max cho biểu đồ
   const chartStats = useMemo(() => {
     if (!convergenceData.length) return { min: 0, max: 1 };
 
@@ -318,7 +318,7 @@ const WcoVisualization = ({
     };
   }, [convergenceData]);
 
-  // 🎯 TRẠNG THÁI KHI CHƯA CÓ DỮ LIỆU
+  //  TRẠNG THÁI KHI CHƯA CÓ DỮ LIỆU
   if (!wcoResult) {
     return (
       <div className="w-full rounded-lg shadow-lg border-2 border-dashed border-gray-300 relative">
@@ -342,7 +342,7 @@ const WcoVisualization = ({
   const isCompleted = stepIndex >= steps.length - 1;
   const canPlay = steps.length > 0 && !isCompleted;
 
-  console.log("🔄 Render state:", {
+  console.log("Render state:", {
     stepIndex,
     stepsLength: steps.length,
     isCompleted,
@@ -368,7 +368,7 @@ const WcoVisualization = ({
 
       {/* 2 CỘT CHÍNH */}
       <div className="flex p-4 gap-4">
-        {/* 🟥 BÊN TRÁI — ĐỒ THỊ + BIỂU ĐỒ HỘI TỤ */}
+        {/* BÊN TRÁI — ĐỒ THỊ + BIỂU ĐỒ HỘI TỤ */}
         <div className="flex-1 min-w-0 flex flex-col gap-4">
           {/* ĐỒ THỊ LỘ TRÌNH */}
           <div
@@ -406,13 +406,18 @@ const WcoVisualization = ({
             </div>
           </div>
           {/* BIỂU ĐỒ HỘI TỤ - ĐÃ ĐIỀU CHỈNH THEO YÊU CẦU */}
-          <div className="mt-4 rounded-2xl shadow-2xl border overflow-hidden" style={{ borderColor: "#01eae6", boxShadow: "0 0 10px #d3ffc8, 0 0 10px #d3ffc8", }}>
+          <div
+            className="mt-4 rounded-2xl shadow-2xl border overflow-hidden"
+            style={{
+              borderColor: "#01eae6",
+              boxShadow: "0 0 10px #d3ffc8, 0 0 10px #d3ffc8",
+            }}
+          >
             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-4">
               <h3 className="text-white font-bold text-xl flex items-center gap-3">
                 <TrendingUp className="w-6 h-6" />
                 Quá Trình Hội Tụ Thuật Toán
               </h3>
-              
             </div>
 
             <div className="h-[500px]  p-6 relative">
@@ -424,7 +429,6 @@ const WcoVisualization = ({
                     preserveAspectRatio="xMidYMid meet"
                     style={{ overflow: "visible" }}
                   >
-                    
                     {(() => {
                       // === MARGIN ĐIỀU CHỈNH ===
                       const left = 12;
@@ -617,7 +621,7 @@ const WcoVisualization = ({
                             y={bottom + 7}
                             fontSize="3"
                             textAnchor="start"
-                           fill="#ffffff"
+                            fill="#ffffff"
                             fontWeight="500"
                             style={{ userSelect: "none" }}
                           >
@@ -688,12 +692,14 @@ const WcoVisualization = ({
         {/*  BÊN PHẢI — THÔNG TIN WCO */}
         <div className="w-96 shrink-0 flex flex-col gap-4">
           {/*  CONTROLS */}
-          <div className=" rounded-lg shadow p-3"  style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
-            <div className="text-white font-bold mb-2">
-               Điều Khiển Mô Phỏng
-            </div>
+          <div
+            className=" rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
+            <div className="text-white font-bold mb-2">Điều Khiển Mô Phỏng</div>
             <div className="flex items-center gap-2">
               <button
                 className="px-3 py-2 rounded bg-[#9dfd7b] text-white hover:bg-green-600 transition"
@@ -732,11 +738,15 @@ const WcoVisualization = ({
           </div>
 
           {/*  THÔNG TIN THUẬT TOÁN */}
-          <div className=" rounded-lg shadow p-3"  style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
+          <div
+            className=" rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
             <div className="font-bold text-white mb-3">
-               Thông Tin Thuật Toán
+              Thông Tin Thuật Toán
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-white">
@@ -768,12 +778,14 @@ const WcoVisualization = ({
           </div>
 
           {/* KẾT QUẢ */}
-          <div className="rounded-lg shadow p-3" style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
-            <div className="font-bold text-white mb-3">
-               Kết Quả Tối Ưu
-            </div>
+          <div
+            className="rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
+            <div className="font-bold text-white mb-3">Kết Quả Tối Ưu</div>
             <div className="text-sm">
               <div className="mb-2 text-white">
                 <strong>Lộ trình:</strong>
@@ -786,10 +798,14 @@ const WcoVisualization = ({
             </div>
           </div>
 
-          {/* 📈 TIẾN TRÌNH */}
-          <div className="rounded-lg shadow p-3" style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
+          {/*  TIẾN TRÌNH */}
+          <div
+            className="rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
             <div className="font-bold text-white mb-2"> Tiến Trình</div>
             <div className="text-sm space-y-2">
               <div className="flex justify-between text-white">

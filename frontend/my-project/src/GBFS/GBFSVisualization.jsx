@@ -31,23 +31,23 @@ const GbfsVisualization = ({
 
   // DEBUG: Log dữ liệu nhận được
   useEffect(() => {
-    console.log("🔍 GBFS Result received:", gbfsResult);
+    console.log("GBFS Result received:", gbfsResult);
     if (gbfsResult) {
-      console.log("📊 Steps data:", gbfsResult.steps);
-      console.log("🏙️ Cities data:", gbfsResult.cities);
-      console.log("🔗 Edges data:", gbfsResult.edges);
+      console.log(" Steps data:", gbfsResult.steps);
+      console.log(" Cities data:", gbfsResult.cities);
+      console.log(" Edges data:", gbfsResult.edges);
     }
   }, [gbfsResult]);
 
-  // 🎯 KHAI BÁO steps TRƯỚC KHI SỬ DỤNG
+  //  KHAI BÁO steps TRƯỚC KHI SỬ DỤNG
   const steps = useMemo(() => {
     if (!gbfsResult?.steps) return [];
     const originalSteps = gbfsResult.steps;
     if (originalSteps.length === 0) return [];
-  
+
     const lastStep = originalSteps[originalSteps.length - 1];
     const firstCity = originalSteps[0].currentCity;
-  
+
     // Tạo bước ảo quay về điểm xuất phát
     const returnStep = {
       currentCity: lastStep.currentCity,
@@ -55,11 +55,10 @@ const GbfsVisualization = ({
       partialPath: [...(lastStep.partialPath || []), firstCity],
       neighbors: [], // bảng neighbors trống cho bước ảo
     };
-  
+
     // Trả về toàn bộ steps + bước ảo
     return [...originalSteps, returnStep];
   }, [gbfsResult]);
-  
 
   const graphData = useMemo(() => {
     if (!gbfsResult) {
@@ -70,7 +69,7 @@ const GbfsVisualization = ({
     const edges = gbfsResult.edges || [];
 
     console.log(
-      `📈 Building graph with ${cities.length} cities and ${edges.length} edges`
+      `Building graph with ${cities.length} cities and ${edges.length} edges`
     );
 
     const nodes = cities.map((c, i) => {
@@ -86,7 +85,7 @@ const GbfsVisualization = ({
         node.lat = c.lat;
         node.lng = c.lng;
         console.log(
-          `📍 Node ${node.id}: (${c.lat}, ${c.lng}) -> (${node.x}, ${node.y})`
+          ` Node ${node.id}: (${c.lat}, ${c.lng}) -> (${node.x}, ${node.y})`
         );
       } else {
         node.x = Math.random() * (width - 100) + 50;
@@ -101,7 +100,7 @@ const GbfsVisualization = ({
         const targetNode = nodes.find((n) => n.id === e.to);
 
         if (!sourceNode || !targetNode) {
-          console.warn(`⚠️ Cannot find nodes for link: ${e.from} -> ${e.to}`);
+          console.warn(` Cannot find nodes for link: ${e.from} -> ${e.to}`);
           return null;
         }
 
@@ -115,7 +114,7 @@ const GbfsVisualization = ({
       })
       .filter((link) => link !== null);
 
-    console.log("🎯 Final graph data:", {
+    console.log(" Final graph data:", {
       nodes: nodes.length,
       links: links.length,
       nodeIds: nodes.map((n) => n.id),
@@ -126,7 +125,7 @@ const GbfsVisualization = ({
     return { nodes, links };
   }, [gbfsResult, width, height]);
 
-  // 🎯 KHAI BÁO visualLinks TRƯỚC KHI SỬ DỤNG
+  //  KHAI BÁO visualLinks TRƯỚC KHI SỬ DỤNG
   const visualLinks = useMemo(() => {
     if (!graphData.links.length) {
       return [];
@@ -194,9 +193,9 @@ const GbfsVisualization = ({
       }
       return;
     }
-    const minSpeed = 200;  // tốc độ nhanh nhất
+    const minSpeed = 200; // tốc độ nhanh nhất
     const maxSpeed = 2000; // tốc độ chậm nhất
-    
+
     playTimerRef.current = setInterval(() => {
       setStepIndex((prev) => {
         const N = steps.length;
@@ -210,7 +209,7 @@ const GbfsVisualization = ({
         }
         return next;
       });
-    }, maxSpeed - simSpeed + minSpeed); 
+    }, maxSpeed - simSpeed + minSpeed);
 
     return () => {
       if (playTimerRef.current) clearInterval(playTimerRef.current);
@@ -254,22 +253,22 @@ const GbfsVisualization = ({
       if (link.status === "current") color = "orange";
       else if (link.status === "selected") color = "green";
       else if (link.status === "candidate") color = "#888";
-  
+
       ctx.strokeStyle = color;
       ctx.lineWidth = Math.max(1, 1.5 * Math.min(2, globalScale));
-  
+
       // Vẽ đường thẳng
       ctx.beginPath();
       ctx.moveTo(link.source.x, link.source.y);
       ctx.lineTo(link.target.x, link.target.y);
       ctx.stroke();
-  
+
       // Hiển thị label chỉ khi hover vào link
       if (hoveredLink === link && link.distance) {
         const midX = (link.source.x + link.target.x) / 2;
         const midY = (link.source.y + link.target.y) / 2;
         ctx.font = `${Math.min(14, 12 * globalScale)}px Sans-Serif`;
-        ctx.fillStyle = "rgba(255,255,255,0.8)"; 
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
         ctx.fillText(`${Math.round(link.distance)} km`, midX + 4, midY - 4);
       }
     };
@@ -284,15 +283,13 @@ const GbfsVisualization = ({
       const currentCity = currentStep ? currentStep.currentCity : null;
       const chosen = currentStep ? currentStep.chosenCity : null;
 
-  // Nếu bước cuối (bước ảo quay về xuất phát)
-const isReturnStep =
-stepIndex === steps.length - 1 && chosen !== null;
+      // Nếu bước cuối (bước ảo quay về xuất phát)
+      const isReturnStep = stepIndex === steps.length - 1 && chosen !== null;
 
-const currentNodeId = isReturnStep ? chosen : currentCity;
+      const currentNodeId = isReturnStep ? chosen : currentCity;
 
-const isCurrent = node.id === currentNodeId;
-const isChosen = !isReturnStep && chosen && node.id === chosen;
-
+      const isCurrent = node.id === currentNodeId;
+      const isChosen = !isReturnStep && chosen && node.id === chosen;
 
       ctx.beginPath();
       ctx.arc(
@@ -317,7 +314,7 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#111";
-      ctx.fillStyle = "#fff"; 
+      ctx.fillStyle = "#fff";
       ctx.fillText(label, node.x + 12, node.y);
     };
   }, [stepIndex, steps]);
@@ -333,7 +330,7 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
     }, 300);
   }, [graphData.nodes.length]);
 
-  // 🎯 DEBUG COMPONENT
+  //  DEBUG COMPONENT
   const DebugInfo = () => (
     <div className="absolute top-2 left-2 bg-red-500 text-white p-2 rounded text-xs z-50">
       DEBUG: Nodes: {graphData.nodes.length}, Links: {visualLinks.length},
@@ -341,13 +338,13 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
     </div>
   );
 
-  // 🎯 TRẠNG THÁI KHI CHƯA CÓ DỮ LIỆU
+  //  TRẠNG THÁI KHI CHƯA CÓ DỮ LIỆU
   if (!gbfsResult) {
     return (
       <div className="w-full bg-white rounded-lg shadow-lg border-2 border-dashed border-gray-300 relative">
         <div className="p-8 text-center">
           <h3 className="text-xl font-bold text-gray-600 mb-2">
-             Mô Phỏng Thuật Toán GBFS
+            Mô Phỏng Thuật Toán GBFS
           </h3>
           <p className="text-gray-500 mb-4">
             Chưa có dữ liệu mô phỏng. Hãy chọn các tỉnh thành và tính toán đường
@@ -369,7 +366,7 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
     );
   }
 
-  // 🎯 TRẠNG THÁI KHI ĐÃ CÓ KẾT QUẢ
+  //  TRẠNG THÁI KHI ĐÃ CÓ KẾT QUẢ
   return (
     <div className="w-full rounded-lg shadow-lg  relative">
       {/* HEADER */}
@@ -389,10 +386,14 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
       <div className="flex p-4 gap-4">
         {/*  BÊN TRÁI — CHỈ HIỂN THỊ ĐỒ THỊ */}
 
-        <div className="flex-1 min-w-0  p-2 rounded-lg shadow-inner border min-h-[500px]" style={{ borderColor: "#01eae6", boxShadow: "0 0 10px #d3ffc8, 0 0 10px #d3ffc8", }}>
-          <div className="text-white font-bold mb-3">
-             Biểu Đồ Mô Phỏng
-          </div>
+        <div
+          className="flex-1 min-w-0  p-2 rounded-lg shadow-inner border min-h-[500px]"
+          style={{
+            borderColor: "#01eae6",
+            boxShadow: "0 0 10px #d3ffc8, 0 0 10px #d3ffc8",
+          }}
+        >
+          <div className="text-white font-bold mb-3">Biểu Đồ Mô Phỏng</div>
           <div
             style={{
               width: width, // <-- sửa từ width cố định sang 100%
@@ -402,38 +403,43 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
               backgroundColor: "#000",
             }}
           >
-         
-           <ForceGraph2D
-  ref={fgRef}
-  graphData={{ nodes: graphData.nodes, links: visualLinks }}
-  width={width}
-  height={height}
-  linkDirectionalParticles={0}
-  linkCanvasObject={linkCanvasObject}
-  nodeCanvasObject={nodeCanvasObject}
-  nodePointerAreaPaint={(node, color, ctx) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
-    ctx.fill();
-  }}
-  onNodeClick={(node) => fgRef.current.centerAt(node.x, node.y, 300)}
-  onLinkHover={(link) => setHoveredLink(link)}   // <--- đây
-  enableNodeDrag={false}
-  dagMode={null}
-  cooldownTicks={0}
-  linkWidth={(link) => (link.status === "selected" ? 3 : 1)}
-  backgroundColor="#000"
-/>
+            <ForceGraph2D
+              ref={fgRef}
+              graphData={{ nodes: graphData.nodes, links: visualLinks }}
+              width={width}
+              height={height}
+              linkDirectionalParticles={0}
+              linkCanvasObject={linkCanvasObject}
+              nodeCanvasObject={nodeCanvasObject}
+              nodePointerAreaPaint={(node, color, ctx) => {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
+                ctx.fill();
+              }}
+              onNodeClick={(node) =>
+                fgRef.current.centerAt(node.x, node.y, 300)
+              }
+              onLinkHover={(link) => setHoveredLink(link)} // <--- đây
+              enableNodeDrag={false}
+              dagMode={null}
+              cooldownTicks={0}
+              linkWidth={(link) => (link.status === "selected" ? 3 : 1)}
+              backgroundColor="#000"
+            />
           </div>
         </div>
 
-        {/* 🟦 BÊN PHẢI — CONTROL + THÔNG SỐ + BẢNG */}
+        {/* BÊN PHẢI — CONTROL + THÔNG SỐ + BẢNG */}
         <div className="w-96 shrink-0 flex flex-col gap-4">
           {/*  CONTROLS */}
-          <div className="  rounded-lg shadow p-3"  style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
+          <div
+            className="  rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
             <div className="text-white font-bold mb-2"> Điều Khiển</div>
 
             <div className="flex items-center gap-2">
@@ -461,29 +467,34 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
               </button>
 
               <div className="ml-2 text-sm text-white flex items-center gap-1">
-  <span>Chậm</span>
-  <input
-    type="range"
-    min={200}       // tốc độ chậm nhất (ms)
-    max={2000}      // tốc độ nhanh nhất (ms)
-    step={100}
-    value={simSpeed}
-    onChange={(e) => setSimSpeed(Number(e.target.value))}
-    className="w-32"
-  />
-  <span>Nhanh</span>
-</div>
-
+                <span>Chậm</span>
+                <input
+                  type="range"
+                  min={200} // tốc độ chậm nhất (ms)
+                  max={2000} // tốc độ nhanh nhất (ms)
+                  step={100}
+                  value={simSpeed}
+                  onChange={(e) => setSimSpeed(Number(e.target.value))}
+                  className="w-32"
+                />
+                <span>Nhanh</span>
+              </div>
             </div>
           </div>
 
-          {/* 📌 THÔNG SỐ */}
-          <div className=" rounded-lg shadow p-3 text-sm text-white"  style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
+          {/*  THÔNG SỐ */}
+          <div
+            className=" rounded-lg shadow p-3 text-sm text-white"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
             <div>
               <strong>Lộ trình tối ưu:</strong>{" "}
-              {gbfsResult.best_solution ? gbfsResult.best_solution.join(" → ") : "—"}
+              {gbfsResult.best_solution
+                ? gbfsResult.best_solution.join(" → ")
+                : "—"}
             </div>
             <div>
               <strong>Tổng quãng đường:</strong> {gbfsResult.best_distance} km
@@ -501,12 +512,14 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
           </div>
 
           {/*  BẢNG BƯỚC */}
-          <div className=" rounded-lg shadow p-3"  style={{
-    background: "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))"
-  }}>
-            <div className="font-bold text-white mb-2">
-               Chi Tiết Từng Bước
-            </div>
+          <div
+            className=" rounded-lg shadow p-3"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(123,253,251,0.4), rgba(157,253,123,0.4))",
+            }}
+          >
+            <div className="font-bold text-white mb-2">Chi Tiết Từng Bước</div>
 
             <div className="max-h-80 overflow-auto">
               <table className="w-full text-sm">
@@ -520,28 +533,34 @@ const isChosen = !isReturnStep && chosen && node.id === chosen;
                 </thead>
 
                 <tbody>
-  {steps
-    .slice(0, steps.length - 1) // loại bỏ bước cuối (bước ảo)
-    .map((s, idx) => (
-      <tr key={idx} className={idx === stepIndex ? "bg-[#286013]" : ""}>
-        <td className="p-2 border-b text-white">{idx + 1}</td>
-        <td className="p-2 border-b font-semibold text-white">{s.currentCity}</td>
-        <td className="p-2 border-b text-xs text-white">
-          {Array.isArray(s.neighbors) && s.neighbors.length > 0
-            ? s.neighbors
-                .map((n) =>
-                  typeof n === "object" ? `${n.name} (${n.h})` : n
-                )
-                .join(", ")
-            : "—"}
-        </td>
-        <td className="p-2 border-b font-bold text-white">
-          {s.chosenCity ?? "—"}
-        </td>
-      </tr>
-  ))}
-</tbody>
-
+                  {steps
+                    .slice(0, steps.length - 1) // loại bỏ bước cuối (bước ảo)
+                    .map((s, idx) => (
+                      <tr
+                        key={idx}
+                        className={idx === stepIndex ? "bg-[#286013]" : ""}
+                      >
+                        <td className="p-2 border-b text-white">{idx + 1}</td>
+                        <td className="p-2 border-b font-semibold text-white">
+                          {s.currentCity}
+                        </td>
+                        <td className="p-2 border-b text-xs text-white">
+                          {Array.isArray(s.neighbors) && s.neighbors.length > 0
+                            ? s.neighbors
+                                .map((n) =>
+                                  typeof n === "object"
+                                    ? `${n.name} (${n.h})`
+                                    : n
+                                )
+                                .join(", ")
+                            : "—"}
+                        </td>
+                        <td className="p-2 border-b font-bold text-white">
+                          {s.chosenCity ?? "—"}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
               </table>
             </div>
           </div>
